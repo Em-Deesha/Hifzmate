@@ -35,6 +35,13 @@ A comprehensive web application for Quran study, memorization planning, and Tajw
 - **Achievement System**: Earn badges for completing surahs
 - **Progress Visualization**: Beautiful badge collection display
 
+### 🔐 User Authentication & Cloud Sync
+- **Firebase Authentication**: Secure sign up, login, and password reset
+- **Cloud Database**: All data synced to Firebase Firestore
+- **User Profiles**: View statistics and manage your account
+- **Cross-Device Sync**: Access your data from any device
+- **Data Backup**: Automatic cloud backup of all your progress
+
 ### 🌙 Theme Support
 - **Light Theme**: Clean, modern light interface
 - **Dark Theme**: Elegant light green dark mode for comfortable reading
@@ -45,6 +52,7 @@ A comprehensive web application for Quran study, memorization planning, and Tajw
 ### Prerequisites
 - Python 3.6 or higher
 - Modern web browser (Chrome, Firefox, Safari, Edge)
+- Firebase account (for authentication and database features)
 
 ### Installation
 
@@ -54,12 +62,20 @@ A comprehensive web application for Quran study, memorization planning, and Tajw
    cd Hifzmate
    ```
 
-2. **Start the development server**
+2. **Set up Firebase** (Required for authentication)
+   - Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
+   - Enable Authentication → Email/Password
+   - Create Firestore Database
+   - Get your Firebase config from Project Settings
+   - Update `firebase-config.js` with your Firebase credentials
+   - See [FIREBASE_SETUP.md](FIREBASE_SETUP.md) for detailed instructions
+
+3. **Start the development server**
    ```bash
    python3 -m http.server 5000
    ```
 
-3. **Open your browser**
+4. **Open your browser**
    Navigate to `http://localhost:5000`
 
 ### Alternative Setup
@@ -76,7 +92,9 @@ python3 -m http.server 3000
 - **Styling**: Modern CSS with CSS Grid, Flexbox, and CSS Variables
 - **Fonts**: Google Fonts (Inter, Amiri, Scheherazade New)
 - **API**: AlQuran Cloud API for Quran data and audio
-- **Storage**: Local Storage for user data persistence
+- **Authentication**: Firebase Authentication (Email/Password)
+- **Database**: Firebase Firestore (Cloud database)
+- **Storage**: Firebase Firestore + Local Storage (fallback)
 - **Server**: Python HTTP Server for local development
 
 ## 📱 Features Overview
@@ -115,20 +133,34 @@ python3 -m http.server 3000
 
 ## 📊 API Integration
 
-The application integrates with the [AlQuran Cloud API](https://alquran.cloud/api) for:
-- Quran text and translations
-- Audio recitations from various Qaris
-- Surah metadata and information
+The application integrates with:
+
+### AlQuran Cloud API
+- [AlQuran Cloud API](https://alquran.cloud/api) for:
+  - Quran text and translations
+  - Audio recitations from various Qaris
+  - Surah metadata and information
+
+### Firebase Services
+- **Firebase Authentication**: User sign up, login, and session management
+- **Firebase Firestore**: Cloud database for user data (plans, bookmarks, badges, progress)
+- **Real-time Sync**: Automatic data synchronization
 
 ## 🔧 Development
 
 ### File Structure
 ```
 Hifzmate/
-├── index.html          # Main HTML file
-├── style.css           # CSS styles and themes
-├── script.js           # JavaScript functionality
-└── README.md           # Project documentation
+├── index.html              # Main HTML file
+├── style.css               # CSS styles and themes
+├── script.js               # JavaScript functionality
+├── firebase-config.js      # Firebase configuration
+├── firebase-service.js     # Firebase service module
+├── FIREBASE_SETUP.md       # Firebase setup guide
+├── INTEGRATION_SUMMARY.md  # Firebase integration details
+├── firestore-rules.txt     # Firestore security rules
+├── logo.png                # App logo
+└── README.md               # Project documentation
 ```
 
 ### Key Components
@@ -154,7 +186,9 @@ Hifzmate/
 - **Theme Switching**: Toggle between light and dark modes
 - **Responsive Design**: Optimized for all screen sizes
 - **Fast Loading**: Efficient API usage and caching
-- **Offline Support**: Local storage for user preferences
+- **Cloud Sync**: Automatic data synchronization across devices
+- **Offline Support**: Local storage fallback for non-logged-in users
+- **User Profiles**: Dashboard with statistics and progress tracking
 
 ## 🤝 Contributing
 
