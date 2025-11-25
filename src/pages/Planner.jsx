@@ -16,7 +16,9 @@ const Planner = ({ user }) => {
 
   const handleAddPlan = async () => {
     if (!planName.trim()) {
-      alert('Enter plan name')
+      if (window.showToast) {
+        window.showToast('Please enter a plan name', 'warning')
+      }
       return
     }
 
@@ -35,11 +37,18 @@ const Planner = ({ user }) => {
     setPlanName('')
     setSelectedSurah('1')
     setPace(3)
+    if (window.showToast) {
+      window.showToast(`Plan "${newPlan.name}" created successfully! 🗓️`, 'success')
+    }
   }
 
   const handleDeletePlan = async (index) => {
+    const planName = plans[index].name
     const newPlans = plans.filter((_, i) => i !== index)
     await saveData('plans', newPlans)
+    if (window.showToast) {
+      window.showToast(`Plan "${planName}" deleted`, 'info')
+    }
   }
 
   return (

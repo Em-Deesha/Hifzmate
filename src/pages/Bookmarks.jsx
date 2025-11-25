@@ -1,16 +1,57 @@
+import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import { useFirebaseData } from '../hooks/useFirebaseData'
 
 const Bookmarks = ({ user }) => {
   const { bookmarks, saveData } = useFirebaseData(user)
+  const [surahNames, setSurahNames] = useState([])
+  const navigate = useNavigate()
 
-  const handleDelete = async (index) => {
+  useEffect(() => {
+    fetch('https://api.alquran.cloud/v1/meta')
+      .then(res => res.json())
+      .then(data => setSurahNames(data.data.surahs.references))
+  }, [])
+
+  const handleDelete = async (index, e) => {
+    e.stopPropagation() // Prevent navigation when clicking delete
     const newBookmarks = bookmarks.filter((_, i) => i !== index)
     await saveData('bookmarks', newBookmarks)
+    if (window.showToast) {
+      window.showToast('Bookmark removed', 'info')
+    }
+  }
+
+  const handleBookmarkClick = (bookmark) => {
+    // Use stored surahNum if available, otherwise find by name
+    let surahNum = bookmark.surahNum
+    
+    if (!surahNum) {
+      const surah = surahNames.find(s => 
+        s.englishName.toLowerCase() === bookmark.surah.toLowerCase()
+      )
+      surahNum = surah?.number
+    }
+    
+    if (surahNum) {
+      // Navigate to Quran Reader with surah and ayah
+      navigate(`/reader?surah=${surahNum}&ayah=${bookmark.ayah}`)
+      if (window.showToast) {
+        window.showToast(`Opening ${bookmark.surah} - Ayah ${bookmark.ayah}`, 'info', 1500)
+      }
+    } else {
+      if (window.showToast) {
+        window.showToast('Could not find surah. Please try again.', 'error')
+      }
+    }
   }
 
   const handleClearAll = async () => {
     if (window.confirm('Are you sure you want to clear all bookmarks?')) {
       await saveData('bookmarks', [])
+      if (window.showToast) {
+        window.showToast('All bookmarks cleared', 'info')
+      }
     }
   }
 
@@ -40,19 +81,26 @@ const Bookmarks = ({ user }) => {
             {bookmarks.map((bookmark, index) => (
               <li
                 key={index}
-                className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border-l-4 border-islamic-green hover:shadow-md transition-shadow"
+                onClick={() => handleBookmarkClick(bookmark)}
+                className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border-l-4 border-islamic-green hover:shadow-lg hover:border-islamic-green-light transition-all cursor-pointer group"
               >
-                <div>
-                  <p className="font-semibold text-gray-900 dark:text-white">
-                    {bookmark.surah} - Ayah {bookmark.ayah}
-                  </p>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <p className="font-semibold text-gray-900 dark:text-white group-hover:text-islamic-green transition-colors">
+                      {bookmark.surah} - Ayah {bookmark.ayah}
+                    </p>
+                    <span className="text-islamic-green opacity-0 group-hover:opacity-100 transition-opacity">
+                      👆 Click to open
+                    </span>
+                  </div>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-1" dir="rtl">
                     {bookmark.text}
                   </p>
                 </div>
                 <button
-                  onClick={() => handleDelete(index)}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 ml-4"
+                  onClick={(e) => handleDelete(index, e)}
+                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 ml-4 flex-shrink-0"
+                  title="Delete bookmark"
                 >
                   ❌
                 </button>

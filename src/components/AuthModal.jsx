@@ -34,8 +34,13 @@ const AuthModal = ({ onClose, onSuccess }) => {
       if (isLogin) {
         const result = await firebaseService.signIn(email, password)
         if (result.success) {
-          onSuccess(result.user)
-          onClose()
+          if (window.showToast) {
+            window.showToast(isLogin ? 'Welcome back! 🎉' : 'Account created successfully! 🎉', 'success', 2000)
+          }
+          setTimeout(() => {
+            onSuccess(result.user)
+            onClose()
+          }, 500)
         } else {
           setError(result.error || 'Login failed')
         }
@@ -47,8 +52,13 @@ const AuthModal = ({ onClose, onSuccess }) => {
         }
         const result = await firebaseService.signUp(email, password, name)
         if (result.success) {
-          onSuccess(result.user)
-          onClose()
+          if (window.showToast) {
+            window.showToast('Account created successfully! 🎉', 'success', 2000)
+          }
+          setTimeout(() => {
+            onSuccess(result.user)
+            onClose()
+          }, 500)
         } else {
           setError(result.error || 'Signup failed')
         }
@@ -148,13 +158,20 @@ const AuthModal = ({ onClose, onSuccess }) => {
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-islamic-green text-white py-3 rounded-lg font-semibold hover:bg-islamic-green-light transition-colors disabled:opacity-50"
-          >
-            {loading ? 'Loading...' : isLogin ? 'Login' : 'Sign Up'}
-          </button>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-islamic-green text-white py-3 rounded-lg font-semibold hover:bg-islamic-green-light transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+        >
+          {loading ? (
+            <>
+              <span className="animate-spin">⏳</span>
+              <span>Loading...</span>
+            </>
+          ) : (
+            isLogin ? 'Login' : 'Sign Up'
+          )}
+        </button>
         </form>
       </div>
     </div>

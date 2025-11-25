@@ -137,9 +137,9 @@ The application integrates with:
 
 ### AlQuran Cloud API
 - [AlQuran Cloud API](https://alquran.cloud/api) for:
-  - Quran text and translations
-  - Audio recitations from various Qaris
-  - Surah metadata and information
+- Quran text and translations
+- Audio recitations from various Qaris
+- Surah metadata and information
 
 ### Firebase Services
 - **Firebase Authentication**: User sign up, login, and session management

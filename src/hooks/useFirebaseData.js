@@ -41,29 +41,44 @@ export const useFirebaseData = (user) => {
   }, [user])
 
   const saveData = async (type, data) => {
+    // Update local state immediately for instant UI feedback
+    switch(type) {
+      case 'plans':
+        setPlans(data)
+        break
+      case 'bookmarks':
+        setBookmarks(data)
+        break
+      case 'badges':
+        setBadges(data)
+        setEarnedBadges(data.map(b => b.surahNum))
+        break
+      case 'mistakes':
+        setMistakes(data)
+        break
+      case 'quizScore':
+        setQuizScore(data)
+        break
+    }
+
+    // Save to Firebase/localStorage in background
     if (user && window.firebaseService) {
       const uid = user.uid
       switch(type) {
         case 'plans':
-          await window.firebaseService.savePlans(uid, data)
-          setPlans(data)
+          window.firebaseService.savePlans(uid, data).catch(console.error)
           break
         case 'bookmarks':
-          await window.firebaseService.saveBookmarks(uid, data)
-          setBookmarks(data)
+          window.firebaseService.saveBookmarks(uid, data).catch(console.error)
           break
         case 'badges':
-          await window.firebaseService.saveBadges(uid, data)
-          setBadges(data)
-          setEarnedBadges(data.map(b => b.surahNum))
+          window.firebaseService.saveBadges(uid, data).catch(console.error)
           break
         case 'mistakes':
-          await window.firebaseService.saveMistakes(uid, data)
-          setMistakes(data)
+          window.firebaseService.saveMistakes(uid, data).catch(console.error)
           break
         case 'quizScore':
-          await window.firebaseService.updateQuizScore(uid, data)
-          setQuizScore(data)
+          window.firebaseService.updateQuizScore(uid, data).catch(console.error)
           break
       }
     } else {
